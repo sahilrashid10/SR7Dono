@@ -5,8 +5,15 @@ import Razorpay from "razorpay";
 import connectDB from "@/db/connectDb";
 
 export const POST = async(req, res)=>{
+
     await connectDB();
+     
+    
     let body = await req.formData();
+
+    if(!body){
+        console.log("error: We are stupid");
+    }
     console.log("The BODY: ",body);
     body = Object.fromEntries(body);
     

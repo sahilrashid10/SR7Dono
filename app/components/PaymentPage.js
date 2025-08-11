@@ -38,21 +38,22 @@ const PaymentPage = ({ username }) => {
             }
             
             // FIXED: Use the actual order ID, not the key_id
-            const orderId = orderData.id;
+            // const orderId = orderData.id;
+        
             
             var options = {
                 "key": orderData.key_id, // Razorpay public key
                 "amount": amount, // Amount in paise
                 "currency": "INR",
-                "name": "SR7Dono",
+                "name": "SR7Dono1",
                 "description": "Donation app for content creators.",
                 "image": "https://example.com/your_logo",
-                "order_id": orderId, // FIXED: Actual order ID from Razorpay
-                "callback_url": `${window.location.origin}/api/razorpay`,
+                "order_id": orderData.id, // FIXED: Actual order ID from Razorpay
+                "callback_url": `${process.env.NEXT_PUBLIC_URL}/api/razorpay`,
                 "prefill": {
                     "name": paymentform.name || "Anonymous",
                     "email": session?.data?.user?.email || "user@example.com",
-                    "contact": "+919876543210"
+                    "contact": "+919876543219"
                 },
                 "notes": {
                     "address": "Razorpay Corporate Office"
