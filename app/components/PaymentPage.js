@@ -1,22 +1,16 @@
-"use client"
-import React, { useState } from 'react';
-import Script from 'next/script';
-import { initiate } from '@/actions/useractions';
-import { useSession } from 'next-auth/react';
+"use client";
+import React, { useState } from "react";
+import Script from "next/script";
+import { initiate } from "@/actions/useractions";
+import { useSession } from "next-auth/react";
 
 const PaymentPage = ({ username }) => {
-    const session = useSession();
-
-    const [paymentform, setpaymentform] = useState({
+    const { data: session } = useSession();
+    const [paymentform, setPaymentform] = useState({
         name: "",
         message: "",
         amount: "",
-    })
-
-    const handleChange = (e) => {
-        setpaymentform({ ...paymentform, [e.target.name]: e.target.value })
-    }
-
+    });
     const donations = [
         {
             name: "Shubham",
@@ -25,88 +19,89 @@ const PaymentPage = ({ username }) => {
         }
     ];
 
+    const handleChange = (e) =>
+        setPaymentform({ ...paymentform, [e.target.name]: e.target.value });
+
     const pay = async (amount) => {
         try {
-            console.log('Starting payment process for amount:', amount);
-            
-            // Get order id from backend
-            let orderData = await initiate(amount, username, paymentform);
-            console.log('Order data received:', orderData);
-            
-            if (!orderData || !orderData.id) {
-                throw new Error('Failed to create order - no order ID received');
+            console.log("Starting payment process for amount:", amount);
+
+            const orderData = await initiate(amount, username, paymentform);
+            console.log("Order data received:", orderData);
+
+            if (!orderData?.id) {
+                throw new Error("Failed to create order - no order ID received");
             }
-            
-            // FIXED: Use the actual order ID, not the key_id
-            // const orderId = orderData.id;
-        
-            
-            var options = {
-                "key": orderData.key_id, // Razorpay public key
-                "amount": amount, // Amount in paise
-                "currency": "INR",
-                "name": "SR7Dono1",
-                "description": "Donation app for content creators.",
-                "image": "https://example.com/your_logo",
-                "order_id": orderData.id, // FIXED: Actual order ID from Razorpay
-                "callback_url": `${process.env.NEXT_PUBLIC_URL}/api/razorpay`,
-                "prefill": {
-                    "name": paymentform.name || "Anonymous",
-                    "email": session?.data?.user?.email || "user@example.com",
-                    "contact": "+919876543219"
+
+            const options = {
+                key: orderData.key_id,
+                amount: orderData.amount,
+                currency: orderData.currency || "INR",
+                name: "SR7Dono1",
+                description: "Donation app for content creators.",
+                image: "https://your-real-domain.com/logo.png",
+                order_id: orderData.id,
+                prefill: {
+                    name: paymentform.name || "Anonymous",
+                    email: session?.user?.email || "user@example.com",
+                    contact: "+919876543219",
                 },
-                "notes": {
-                    "address": "Razorpay Corporate Office"
-                },
-                "theme": {
-                    "color": "#3399cc"
-                },
-                "handler": function (response) {
-                    console.log('Payment successful:', response);
-                    alert('Payment successful! Redirecting...');
-                    // Razorpay will automatically redirect to callback_url
-                },
-                "modal": {
-                    "ondismiss": function() {
-                        console.log('Payment cancelled by user');
-                        alert('Payment was cancelled');
+                notes: { address: "Razorpay Corporate Office" },
+                theme: { color: "#3399cc" },
+                handler: async function (razorpayResponse) {
+                    console.log("Payment success (client):", razorpayResponse);
+                    try {
+                        const res = await fetch("/api/razorpay", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify(razorpayResponse),
+                        });
+                        const data = await res.json();
+                        console.log("Server verify response:", data);
+                        if (data.success && data.redirectUrl) {
+                            window.location.href = data.redirectUrl;
+                        } else {
+                            alert("Verification failed: " + (data.message || "unknown"));
+                        }
+                    } catch (err) {
+                        console.error("Error calling verify endpoint:", err);
+                        alert("Payment made but verification failed. Check server logs.");
                     }
-                }
+                },
+                modal: {
+                    ondismiss: function () {
+                        console.log("Payment cancelled by user");
+                    },
+                },
             };
 
-            console.log('Opening Razorpay with options:', options);
-            
             if (!window.Razorpay) {
-                throw new Error('Razorpay script not loaded. Please refresh the page.');
+                throw new Error("Razorpay script not loaded.");
             }
-            
-            var rzp1 = new window.Razorpay(options);
+
+            const rzp1 = new window.Razorpay(options);
             rzp1.open();
-            
         } catch (error) {
-            console.error('Payment error:', error);
+            console.error("Payment error:", error);
             alert(`Payment failed: ${error.message}`);
         }
-    }
+    };
 
     const handleFormPayment = () => {
         if (!paymentform.amount || paymentform.amount <= 0) {
-            alert('Please enter a valid amount');
+            alert("Please enter a valid amount");
             return;
         }
-        // Convert rupees to paise (multiply by 100)
         pay(paymentform.amount * 100);
-    }
-
+    };
     return (
         <>
-            <Script 
+
+            <Script
                 src="https://checkout.razorpay.com/v1/checkout.js"
-                onLoad={() => console.log('Razorpay script loaded successfully')}
-                onError={(e) => {
-                    console.error('Failed to load Razorpay script:', e);
-                    alert('Failed to load payment system. Please refresh the page.');
-                }}
+                strategy="afterInteractive"
+                onLoad={() => console.log("Razorpay script loaded successfully")}
+                onError={(e) => console.error("Failed to load Razorpay script:", e)}
             />
 
             <div className="min-h-screen bg-sky-800 text-white p-4">
