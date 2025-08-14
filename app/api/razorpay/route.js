@@ -8,7 +8,14 @@ export const POST = async (req) => {
     console.log("VERIFY ROUTE HIT", new Date().toISOString());
     await connectDB();
 
-    const body = await req.json();
+    const ct = (req.headers.get("content-type") || "").toLowerCase();
+    let body;
+    if (ct.includes("application/json")) {
+      body = await req.json();
+    } else {
+      const fd = await req.formData();
+      body = Object.fromEntries(fd);
+    }
     console.log("verify body:", body);
 
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = body;
@@ -19,8 +26,8 @@ export const POST = async (req) => {
       );
     }
 
-    const paymentRecord = await Payment.findOne({ oid: razorpay_order_id });
-    if (!paymentRecord) {
+    const p = await Payment.findOne({ oid: razorpay_order_id });
+    if (!p) {
       return NextResponse.json(
         { success: false, message: "Order ID not found" },
         { status: 404 }
@@ -35,13 +42,8 @@ export const POST = async (req) => {
       );
     }
 
-    const isValid = validatePaymentVerification(
-      { order_id: razorpay_order_id, payment_id: razorpay_payment_id },
-      razorpay_signature,
-      secret
-    );
-
-    console.log("Signature valid?", isValid);
+    const attributes = { order_id: razorpay_order_id, payment_id: razorpay_payment_id };
+    const isValid = validatePaymentVerification(attributes, razorpay_signature, secret);
 
     if (!isValid) {
       return NextResponse.json(
@@ -50,11 +52,12 @@ export const POST = async (req) => {
       );
     }
 
-    paymentRecord.done = true;
-    await paymentRecord.save();
+    p.done = true;
+    await p.save();
 
-    const redirectUrl = `${process.env.NEXT_PUBLIC_URL || "http://localhost:3000"}/${paymentRecord.to_user}?paymentdone=true`;
-    return NextResponse.json({ success: true, redirectUrl });
+    const redirectUrl = `${process.env.NEXT_PUBLIC_URL || "http://localhost:3000"}/${p.to_user}?paymentdone=true`;
+    return NextResponse.json({ success: true, redirectUrl }, { status: 200 });
+
   } catch (err) {
     console.error("Verify route error:", err);
     return NextResponse.json(

@@ -11,3 +11,9 @@ const Page = async({params}) => {
 };
 
 export default Page;
+
+export async function generateMetadata({params}){
+  return{
+    title:`${params.username}-SR7-Dono`
+  }
+}
