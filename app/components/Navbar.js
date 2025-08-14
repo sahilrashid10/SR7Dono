@@ -1,15 +1,16 @@
 "use client";
-import React, { useState } from "react";
+import { useState } from "react";
 import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 const Navbar = () => {
   const { data: session } = useSession();
   const [showdropdown, setshowdropdown] = useState(false);
   const router = useRouter();
 
-  const handleNav = async (path) => {
+  const handleNav = (path) => {
     setTimeout(() => {
       setshowdropdown(false);
     }, 100);
@@ -23,10 +24,12 @@ const Navbar = () => {
         className="logo font-bold text-lg flex items-center py-2"
         href="/"
       >
-        <img
+        <Image
           className="invertIMG posto w-10 h-10"
           src="/robot.gif"
           alt="Logo"
+          width={40}
+          height={40}
         />
         <span className="text-2xl ml-2">
           SR7

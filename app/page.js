@@ -1,5 +1,8 @@
-import Image from "next/image";
 import Link from "next/link";
+
+export const metadata = {
+  title: "Home, SR7-Dono",
+};
 
 export default function Home() {
   return (
@@ -18,7 +21,7 @@ export default function Home() {
         </p>
 
         <div>
-          <Link href={"/login"}>
+          <Link href="/login">
             <button
               type="button"
               className="text-white bg-gradient-to-br from-orange-600 to-orange-700 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
@@ -90,9 +93,4 @@ export default function Home() {
       </div>
     </>
   );
-}
-
-
-export const metadata={
-    title:"Home, SR7-Dono"
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { signIn, signOut, useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { fetchUser, updateProfile } from "@/actions/useractions";
 
@@ -21,39 +21,40 @@ export default function Dashboard() {
 
   useEffect(() => {
     if (!session) {
-      // Redirect if not logged in
       router.push("/login");
       return;
     }
-
-    // Fetch user data only if session exists
-    getData();
-  }, [router, session]);
+    if (session?.user?.name) {
+      getData();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [session]);
 
   const getData = async () => {
-    if (!session || !session.user) return; // ✅ Guard against undefined
     try {
-      let u = await fetchUser(session.user.name);
-      setFormData(u); // ✅ Correct state setter
+      const u = await fetchUser(session.user.name);
+      if (u) {
+        setFormData((prev) => ({ ...prev, ...u }));
+      }
     } catch (err) {
       console.error("Failed to fetch user:", err);
     }
   };
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
+    setFormData((prev) => ({
+      ...prev,
       [e.target.name]: e.target.value,
-    });
+    }));
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault(); // ✅ prevent page reload
-    if (!session || !session.user) return;
+    e.preventDefault();
+    if (!session?.user?.name) return;
 
     try {
-      await update();
       await updateProfile(formData, session.user.name);
+      await update();
       alert("Profile updated");
     } catch (err) {
       console.error("Update failed:", err);
@@ -69,14 +70,12 @@ export default function Dashboard() {
         </h1>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-
-          {/* Name */}
           <input
             type="text"
             name="name"
             placeholder="Name"
-            value={formData?.name || ""} // ✅ Default to empty string
-            onChange={(e)=>handleChange(e)}
+            value={formData.name || ""}
+            onChange={handleChange}
             className="w-full p-2 rounded bg-sky-950 focus:outline-none"
           />
 
@@ -84,7 +83,7 @@ export default function Dashboard() {
             type="email"
             name="email"
             placeholder="Email"
-            value={formData.email || ""} // ✅ Default
+            value={formData.email || ""}
             onChange={handleChange}
             className="w-full p-2 rounded bg-sky-950 focus:outline-none"
           />
@@ -93,7 +92,7 @@ export default function Dashboard() {
             type="text"
             name="username"
             placeholder="Username"
-            value={formData.username || ""} // ✅ Default
+            value={formData.username || ""}
             onChange={handleChange}
             className="w-full p-2 rounded bg-sky-950 focus:outline-none"
           />
@@ -102,25 +101,16 @@ export default function Dashboard() {
             type="text"
             name="profilepic"
             placeholder="Profile Picture"
-            value={formData.profilepic || ""} // ✅ Default
+            value={formData.profilepic || ""}
             onChange={handleChange}
             className="w-full p-2 rounded bg-sky-950 focus:outline-none"
           />
 
-          {/* <input
-            type="text"
-            name="coverpic"
-            placeholder="Cover Picture"
-            value={formData.coverpic || ""} // ✅ Default
-            onChange={handleChange}
-            className="w-full p-2 rounded bg-sky-950 focus:outline-none"
-          /> */}
-
           <input
             type="text"
             name="razorpayId"
-            placeholder="Razorpay id"
-            value={formData.razorpayId || ""} // ✅ Default
+            placeholder="Razorpay ID"
+            value={formData.razorpayId || ""}
             onChange={handleChange}
             className="w-full p-2 rounded bg-sky-950 focus:outline-none"
           />
@@ -129,13 +119,11 @@ export default function Dashboard() {
             type="text"
             name="razorpaySecret"
             placeholder="Razorpay Secret"
-            value={formData.razorpaySecret || ""} // ✅ Default
+            value={formData.razorpaySecret || ""}
             onChange={handleChange}
             className="w-full p-2 rounded bg-sky-950 focus:outline-none"
           />
 
- 
-          {/* Save Button */}
           <button
             type="submit"
             className="w-full text-white bg-gradient-to-br from-orange-600 to-orange-700 hover:bg-gradient-to-bl focus:ring-2 focus:outline-none focus:ring-orange-600 dark:focus:ring-orange-800 py-2 rounded"

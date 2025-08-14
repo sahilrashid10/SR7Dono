@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import Script from "next/script";
+import Image from "next/image"; // ✅ use Next.js Image
 import { initiate, fetchUser, fetchPayments } from "@/actions/useractions";
 import { useSession } from "next-auth/react";
 
@@ -19,6 +20,7 @@ const PaymentPage = ({ username }) => {
     getData();
     const urlParams = new URLSearchParams(window.location.search);
     setShowPaymentSuccess(urlParams.get("paymentdone") === "true");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleChange = (e) => {
@@ -103,10 +105,12 @@ const PaymentPage = ({ username }) => {
 
           {/* Profile */}
           <div className="flex justify-center mb-6">
-            <img
+            <Image
               className="w-28 h-28 sm:w-40 sm:h-40 rounded-full border-4 border-white object-cover"
               src={currentUser?.profilepic || "/default-avatar.png"}
               alt="Profile"
+              width={160}
+              height={160}
             />
           </div>
 
@@ -154,7 +158,7 @@ const PaymentPage = ({ username }) => {
                               </p>
                               {donor.message && (
                                 <p className="text-xs text-gray-300 mt-1 italic break-words">
-                                  "{donor.message}"
+                                  &quot;{donor.message}&quot;
                                 </p>
                               )}
                               <p className="text-xs text-gray-400 mt-1">
