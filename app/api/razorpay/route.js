@@ -55,7 +55,7 @@ export const POST = async (req) => {
     p.done = true;
     await p.save();
 
-    const redirectUrl = `${process.env.NEXT_PUBLIC_URL || "https://sr-7-dono.vercel.app/"}/${p.to_user}?paymentdone=true`;
+    const redirectUrl = `${process.env.NEXT_PUBLIC_URL || "https://sr7dono.vercel.app/"}/${p.to_user}?paymentdone=true`;
     return NextResponse.json({ success: true, redirectUrl }, { status: 200 });
 
   } catch (err) {
