@@ -8,7 +8,7 @@ import { NextResponse } from 'next/server';
 // Environment validation to catch swapped/missing env vars on Vercel
 const GITHUB_ID = process.env.GITHUB_ID || '';
 const GITHUB_SECRET = process.env.GITHUB_SECRET || '';
-const NEXTAUTH_URL = process.env.NEXTAUTH_URL || '';
+const NEXTAUTH_URL = process.env.NEXTAUTH_URL || process.env.NEXT_PUBLIC_URL || '';
 const looksLikeHexSecret = (s) => typeof s === 'string' && /^[0-9a-f]{32,}$/i.test(s);
 const envOk = Boolean(GITHUB_ID && GITHUB_SECRET && NEXTAUTH_URL) && !looksLikeHexSecret(GITHUB_ID);
 
