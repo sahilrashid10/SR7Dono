@@ -3,6 +3,7 @@ import GitHubProvider from 'next-auth/providers/github';
 import mongoose from 'mongoose';
 import connectDb from '@/db/connectDb';
 import User from '@/app/models/User';
+import { NextResponse } from 'next/server';
 
 // Environment validation to catch swapped/missing env vars on Vercel
 const GITHUB_ID = process.env.GITHUB_ID || '';
