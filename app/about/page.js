@@ -124,13 +124,9 @@ const About = () => {
           </div>
         </div>
       </section>
-
-      {/* Footer Text */}
-      <p className="text-center text-gray-500 mt-16">
-        © {new Date().getFullYear()} SR7-Dono. All rights reserved.
-      </p>
     </div>
   );
 };
 
 export default About;
+
