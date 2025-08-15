@@ -10,6 +10,8 @@ const authOptions = {
       clientSecret: process.env.GITHUB_SECRET,
     }),
   ],
+  secret: process.env.NEXTAUTH_SECRET || process.env.GITHUB_SECRET || 'dev-secret',
+  debug: process.env.NODE_ENV !== 'production',
   callbacks: {
     async signIn({ user, account, profile, email, credentials }) {
       if (account && account.provider === 'github') {
