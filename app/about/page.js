@@ -9,9 +9,11 @@ const About = () => {
   return (
     <div className="container mx-auto px-6 md:px-4 py-12 space-y-16">
       {/* Main Title */}
-      <h1 className="font-bold flex gap-3 md:gap-20 justify-center items-center text-3xl md:text-5xl text-white mb-8">
-        SR7<span className="text-orange-600 text-2xl md:text-4xl">DONO</span>
-      </h1>
+        <div className="font-bold flex gap-6 md:gap-20 md:text-5xl justify-center items-center text-3xl">
+          <span>
+            SR7<span className="text-orange-600 text-2xl">DONO</span>
+          </span>
+        </div>
 
       {/* Intro Paragraph */}
       <p className="text-lg md:text-xl text-white text-center max-w-3xl mx-auto">
