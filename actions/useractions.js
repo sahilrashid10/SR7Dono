@@ -3,7 +3,6 @@ import Razorpay from "razorpay"
 import connectDB from "@/db/connectDb"
 import User from "@/app/models/User"
 import Payment from "@/app/models/Payment"
- 
 
 export const initiate = async (amount, to_username, Paymentform) => {
     try {
@@ -128,4 +127,5 @@ export const updateProfile = async (data, oldusername) => {
        razorpaySecret: ndata.razorpaySecret || "",
        updatedAt: new Date()
    });
+
 };
