@@ -17,6 +17,7 @@ const Login = () => {
     {
       name: "Google",
       icon: "https://www.svgrepo.com/show/475656/google-color.svg",
+      action: () => signIn("google"),
     },
     {
       name: "GitHub",
