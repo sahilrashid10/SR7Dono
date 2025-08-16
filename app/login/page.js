@@ -19,26 +19,10 @@ const Login = () => {
       icon: "https://www.svgrepo.com/show/475656/google-color.svg",
     },
     {
-      name: "LinkedIn",
-      icon: "https://www.svgrepo.com/show/448234/linkedin.svg",
-    },
-    {
-      name: "X",
-      icon: "/x.svg",
-    },
-    {
-      name: "Facebook",
-      icon: "https://upload.wikimedia.org/wikipedia/commons/0/05/Facebook_Logo_%282019%29.png",
-    },
-    {
       name: "GitHub",
       icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg",
       action: () => signIn("github"),
-    },
-    {
-      name: "Apple",
-      icon: "https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg",
-    },
+    }
   ];
 
   return (
